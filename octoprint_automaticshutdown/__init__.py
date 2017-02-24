@@ -17,6 +17,7 @@ class AutomaticshutdownPlugin(octoprint.plugin.TemplatePlugin,
 
 	def __init__(self):
                 self.abortTimeout = 0
+                self.offUrl = "http://192.0.0.1"
                 self.rememberCheckBox = False
                 self.lastCheckBoxValue = False
 		self._automatic_shutdown_enabled = False
@@ -26,6 +27,7 @@ class AutomaticshutdownPlugin(octoprint.plugin.TemplatePlugin,
 
         def initialize(self):
                 self.abortTimeout = self._settings.get_int(["abortTimeout"])
+                self.offUrl = self._settings.get_string(["offUrl"])
                 self._logger.debug("abortTimeout: %s" % self.abortTimeout)
 
                 self.rememberCheckBox = self._settings.get_boolean(["rememberCheckBox"])
@@ -149,8 +151,8 @@ class AutomaticshutdownPlugin(octoprint.plugin.TemplatePlugin,
 		shutdown_command = self._settings.global_get(["server", "commands", "systemShutdownCommand"])
 		self._logger.info("Shutting down system with command: {command}".format(command=shutdown_command))
 		try:
-			import sarge
-			p = sarge.run(shutdown_command, async=True)
+			import urllib2
+			urllib2.urlopen("http://192.168.0.248/off).read()
 		except Exception as e:
 			self._logger.exception("Error when shutting down: {error}".format(error=e))
 			return
@@ -158,6 +160,7 @@ class AutomaticshutdownPlugin(octoprint.plugin.TemplatePlugin,
         def get_settings_defaults(self):
                 return dict(
                         abortTimeout = 30,
+                        offUrl = "",
                         rememberCheckBox = False,
                         lastCheckBoxValue = False
                 )
@@ -166,6 +169,7 @@ class AutomaticshutdownPlugin(octoprint.plugin.TemplatePlugin,
                 octoprint.plugin.SettingsPlugin.on_settings_save(self, data)
         
                 self.abortTimeout = self._settings.get_int(["abortTimeout"])
+                self.offUrl = self._settings.get_string(["offUrl"])
                 self.rememberCheckBox = self._settings.get_boolean(["rememberCheckBox"])
                 self.lastCheckBoxValue = self._settings.get_boolean(["lastCheckBoxValue"])
 
